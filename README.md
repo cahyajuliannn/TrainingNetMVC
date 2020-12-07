@@ -11,6 +11,6 @@
 - model
 - controller
 
-`Monday (07/09/2020)`:
+`Monday (07/11/2020)`:
 
-- [x] Supplier Province Create Update Delete (AJAX)
+- [x] Tugas 2: Supplier Province Create Update Delete (AJAX)
