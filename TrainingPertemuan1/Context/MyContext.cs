@@ -14,5 +14,7 @@ namespace TrainingPertemuan1.Context
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Division> Divisions { get; set; }
         public DbSet<FormRegist> FormRegists { get; set; }
+        public DbSet<Province> Provinces { get; set; }
+        public DbSet<Supplier> Suppliers { get; set; }
     }
 }
