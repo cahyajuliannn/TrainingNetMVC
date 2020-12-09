@@ -16,5 +16,7 @@ namespace TrainingPertemuan1.Context
         public DbSet<FormRegist> FormRegists { get; set; }
         public DbSet<Province> Provinces { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
+        public DbSet<Barang> Barangs { get; set; }
+        public DbSet<KategoriBarang> KategoriBarangs { get; set; }
     }
 }

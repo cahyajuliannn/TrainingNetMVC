@@ -83,3 +83,5 @@ C:\Users\User\source\repos\TrainingPertemuan1\TrainingPertemuan1\obj\Debug\Train
 C:\Users\User\source\repos\TrainingPertemuan1\TrainingPertemuan1\obj\Debug\TrainingPertemuan1.csprojAssemblyReference.cache
 C:\Users\User\source\repos\TrainingPertemuan1\TrainingPertemuan1\obj\Debug\TrainingPertemuan1.Migrations.addInit.resources
 C:\Users\User\source\repos\TrainingPertemuan1\TrainingPertemuan1\obj\Debug\TrainingPertemuan1.csproj.GenerateResource.cache
+C:\Users\User\source\repos\TrainingPertemuan1\TrainingPertemuan1\obj\Debug\TrainingPertemuan1.Migrations.addSupplierProvince.resources
+C:\Users\User\source\repos\TrainingPertemuan1\TrainingPertemuan1\obj\Debug\TrainingPertemuan1.Migrations.addBarangKategori.resources

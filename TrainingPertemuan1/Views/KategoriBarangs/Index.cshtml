@@ -1,0 +1,269 @@
+﻿@model IEnumerable<TrainingPertemuan1.Models.KategoriBarang>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Kategori Barang</h2>
+
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" onclick="Reset()">Create</button>
+
+<hr />
+
+<table class="table table-responsive" id="myTable">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Kategori</th>
+            <th>Nama Barang</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+</table>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="exampleModalLabel">Kategori Barang Form</h3>
+            </div>
+            <div class="modal-body">
+                <div class="form-group" hidden>
+                    <label for="id" class="col-form-label">Id</label>
+                    <input type="text" class="form-control" id="Id">
+                </div>
+                <div class="form-group">
+                    <label for="name" class="col-form-label">Kategori Barang</label>
+                    <input class="form-control" id="Name" placeholder="Kategori Barang" />
+                </div>
+                <div class="form-group">
+                    <label for="name" class="col-form-label">Barang</label>
+                    <select class="select2" form="form-control" id="barangName" name="barangName">
+                        <option value="0"> -- Pilih Barang -- </option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="Post()">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+
+    <script>
+        var table = null;
+        $(document).ready(function () {
+            table = $("#myTable").DataTable({
+                "filter": true,
+                "orderMulti": false,
+                "ajax": {
+                    "url": "/RouteKategoriBarangs/GetAll",
+                    "datatype": "json",
+                    "dataSrc": ""
+                },
+                "columnDefs": [
+                    {
+                        "targets": [0],
+                        "visible": false,
+                        "searchable": false
+                    },
+                    {
+                        "targets": [2],
+                        "searchable": false,
+                        "orderable": false
+                    }
+                ],
+                "columns": [
+                    { "data": "Id", "name": "Id", "autoWidth": true },
+                    { "data": "Name", "name": "Name", "autoWidth": true },
+                    { "data": "Barang.Name", "name": "Barang", "autoWidth": true },
+                    {
+                        "render": function (data, type, full, meta) {
+                            return '<a class="btn btn-info" href="#" onclick="GetBarang( ' + full.Id + ')">Edit</a> ' +
+                                '<a class="btn btn-danger" href="#" onclick="DeleteBarang( ' + full.Id + ')">Delete</a>'
+                        }
+                    }
+                ]
+            })
+        })
+        function GetBarang(id) {
+            $.ajax({
+                url: "/RouteKategoriBarangs/GetById/",
+                data: { id: id }
+            }).then((result) => {
+                $("#myModal").modal("show");
+                $("#Id").val(result.Id);
+                $("#Name").val(result.Name);
+            }).error((error) => {
+                console.log(error);
+            })
+        }
+
+        function Post() {
+            debugger;
+            var b = document.getElementById("barangName");
+            var id1 = b.options[b.selectedIndex].id;
+            var myData = {
+                Id: id1
+            };
+            var province = new Object();
+            province.Id = $("#Id").val();
+            province.Name = $("#Name").val();
+            province.Barang_Id = myData.Id;
+            console.log(province);
+            var links = (province.Id == "") ? "/RouteKategoriBarangs/PostBarang" : "/RouteKategoriBarangs/EditBarang";
+            $.ajax({
+                url: links,
+                data: province
+            }).then((result) => {
+                if (result == 200) {
+                    Swal.fire(
+                        'Good job!',
+                        'Your data has been saved!',
+                        'success'
+                    )
+                    table.ajax.reload();
+                    $("#Id").val(null);
+                    $("#Name").val(null);
+                    $("#barangName").val(null);
+                    $("#myModal").modal('toggle');
+                } else if (result == 400) {
+                    Swal.fire(
+                        'Watch Out!',
+                        'Your data failed to saved!',
+                        'error'
+                    )
+                }
+            }).catch((error) => {
+                Swal.fire(
+                    'Warning!',
+                    'Check your internet connection!',
+                    'warning'
+                )
+            })
+        }
+        function DeleteBarang(id) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "/RouteKategoriBarangs/DeleteBarang/",
+                        data: { id: id }
+                    }).then((result) => {
+                        if (result == 200) {
+                            Swal.fire(
+                                'Deleted!',
+                                'Your data has been deleted.',
+                                'success'
+                            )
+                            table.ajax.reload();
+                        } else if (result == 400) {
+                            Swal.fire(
+                                'Error!',
+                                'Your data failed to delete.',
+                                'error'
+                            )
+                        } else if (result == 404) {
+                            Swal.fire(
+                                'Warning!',
+                                'Your id is not valid.',
+                                'warning'
+                            )
+                        }
+                    }).catch((error) => {
+                        console.log(error);
+                    })
+                }
+            })
+        }
+        function Reset() {
+            $("#name").val("");
+        }
+        var selopBarang = {
+            getAllBarang: function (idAja) {
+
+                $.ajax({
+                    url: '/RouteBarangs/GetAll',
+                    method: 'get',
+                    contentType: 'application/json',
+                    success: function (res, status, xhr) {
+                        if (xhr.status == 200 || xhr.status == 201) {
+                            $("#barangName").select2();
+                            var dynamicSelect = document.getElementById("barangName");
+                            Array.from(res).forEach(element => {
+                                var newOption = document.createElement("option")
+                                newOption.setAttribute("Id", element.Id);
+                                newOption.setAttribute("value", element.Name);
+                                newOption.setAttribute("Name", "Name");
+                                newOption.text = element.Name;
+                                dynamicSelect.add(newOption);
+                            });
+                            //console.log(res);
+                            if (idAja != 0) {
+                                $("#barangName option[id='" + idAja + "']").attr("selected", "selected");
+                            }
+                        } else {
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
+            }
+        };
+        //dropdown buat edit
+        var selopEdit = {
+            getAllBarang: function (idAja) {
+
+                $.ajax({
+                    url: '/RouteBarangs/GetAll',
+                    method: 'get',
+                    contentType: 'application/json',
+                    success: function (res, status, xhr) {
+                        if (xhr.status == 200 || xhr.status == 201) {
+                            $("#barangName").select2();
+                            var dynamicSelect = document.getElementById("barangName");
+                            $('#barangName').find('option').remove();
+                            Array.from(res).forEach(element => {
+                                var newOption = document.createElement("option")
+                                newOption.setAttribute("Id", element.Id);
+                                newOption.setAttribute("value", element.Name);
+                                newOption.setAttribute("Name", "Name");
+                                newOption.text = element.Name;
+                                dynamicSelect.add(newOption);
+                            });
+                            console.log(res);
+                            if (idAja != 0) {
+                                $("#barangName option[id='" + idAja + "']").attr("selected", "selected");
+                            }
+                        } else {
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
+            }
+        };
+        
+        $(document).ready(function () {
+            selopBarang.getAllBarang();
+            selopEdit.getAllBarang();
+            $(".select2").select2();
+        });
+    </script>
+}
